@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="mg3.foundry.Features.Home.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Foundry Local">
+
+    <Grid Padding="10" RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+        <!--  Navigation Bar  -->
+        <Frame
+            Grid.Row="0"
+            Margin="0,0,0,15"
+            Padding="10"
+            BackgroundColor="{StaticResource Primary}"
+            CornerRadius="10"
+            HasShadow="True">
+            <HorizontalStackLayout Spacing="15">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="24"
+                    Text="Foundry Local UI"
+                    TextColor="White"
+                    VerticalOptions="Center" />
+                
+                <HorizontalStackLayout
+                    HorizontalOptions="EndAndExpand"
+                    Spacing="10">
+                    <Button
+                        Command="{Binding NavigateToChatCommand}"
+                        IsEnabled="{Binding IsFoundryInstalled}"
+                        Text="💬"
+                        WidthRequest="40"
+                        BackgroundColor="Transparent"
+                        TextColor="White" />
+                    
+                    <Button
+                        Command="{Binding NavigateToModelsCommand}"
+                        IsEnabled="{Binding IsFoundryInstalled}"
+                        Text="📦"
+                        WidthRequest="40"
+                        BackgroundColor="Transparent"
+                        TextColor="White" />
+                </HorizontalStackLayout>
+            </HorizontalStackLayout>
+        </Frame>
+
+        <!--  Status Section  -->
+        <Frame
+            Grid.Row="1"
+            Margin="0,0,0,15"
+            Padding="15"
+            Style="{StaticResource ModernCard}">
+            <VerticalStackLayout Spacing="10">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Service Status"
+                    TextColor="{StaticResource Primary}" />
+
+                <HorizontalStackLayout Spacing="10">
+                    <ActivityIndicator
+                        IsRunning="{Binding IsLoading}"
+                        IsVisible="{Binding IsLoading}"
+                        Color="{StaticResource Primary}"
+                        VerticalOptions="Center" />
+
+                    <Label
+                        FontSize="16"
+                        Text="{Binding StatusMessage}"
+                        TextColor="{Binding IsFoundryInstalled, Converter={StaticResource BoolToColorConverter}}"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <Frame
+                    BackgroundColor="{Binding IsFoundryInstalled, Converter={StaticResource BoolToColorConverter}}"
+                    CornerRadius="20"
+                    Padding="10,5"
+                    HasShadow="False">
+                    <Label
+                        Text="{Binding IsFoundryInstalled, Converter={StaticResource BoolToStatusTextConverter}}"
+                        FontSize="12"
+                        TextColor="White"
+                        HorizontalOptions="Center" />
+                </Frame>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!--  Quick Actions  -->
+        <Frame
+            Grid.Row="2"
+            Margin="0,0,0,15"
+            Padding="15"
+            Style="{StaticResource ModernCard}">
+            <VerticalStackLayout Spacing="10">
+                <Label
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    Text="Quick Actions"
+                    TextColor="{StaticResource Primary}" />
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                    <Button
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Command="{Binding NavigateToChatCommand}"
+                        IsEnabled="{Binding IsFoundryInstalled}"
+                        Text="Chat with Model"
+                        CornerRadius="8"
+                        BackgroundColor="{StaticResource Primary}" />
+
+                    <Button
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        Command="{Binding NavigateToModelsCommand}"
+                        IsEnabled="{Binding IsFoundryInstalled}"
+                        Text="Manage Models"
+                        CornerRadius="8"
+                        BackgroundColor="{StaticResource Secondary}" />
+
+                    <Button
+                        Grid.Column="0"
+                        Grid.Row="1"
+                        Command="{Binding RefreshCommand}"
+                        Text="Refresh Status"
+                        CornerRadius="8"
+                        BackgroundColor="{StaticResource Gray200}"
+                        TextColor="{StaticResource Black}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!--  Cached Models  -->
+        <ScrollView Grid.Row="3">
+            <VerticalStackLayout Spacing="15">
+                <Frame Padding="15" Style="{StaticResource ModernCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <HorizontalStackLayout>
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Text="Cached Models"
+                                TextColor="{StaticResource Primary}"
+                                VerticalOptions="Center" />
+
+                            <HorizontalStackLayout
+                                HorizontalOptions="EndAndExpand"
+                                Spacing="10">
+                                <Label
+                                    Text="{Binding CachedModels.Count}"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    TextColor="{StaticResource Primary}"
+                                    VerticalOptions="Center" />
+
+                                <Button
+                                    Command="{Binding RefreshCommand}"
+                                    CornerRadius="20"
+                                    HeightRequest="40"
+                                    Text="↻"
+                                    WidthRequest="40"
+                                    BackgroundColor="{StaticResource Primary}" />
+                            </HorizontalStackLayout>
+                        </HorizontalStackLayout>
+
+                        <CollectionView ItemsSource="{Binding CachedModels}">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Frame
+                                        Margin="0,5"
+                                        Padding="12"
+                                        Style="{StaticResource ModernCard}"
+                                        BorderColor="{StaticResource Primary}">
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <Image
+                                                Source="model_icon.png"
+                                                WidthRequest="30"
+                                                HeightRequest="30"
+                                                VerticalOptions="Center" />
+
+                                            <HorizontalStackLayout
+                                                Grid.Column="1"
+                                                Spacing="8"
+                                                VerticalOptions="Center">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    FontSize="16"
+                                                    Text="{Binding DisplayName}"
+                                                    VerticalOptions="Center" />
+
+                                                <Label
+                                                    FontSize="14"
+                                                    Text="v{Binding Version}"
+                                                    TextColor="{StaticResource Gray500}"
+                                                    VerticalOptions="Center" />
+
+                                                <Frame
+                                                    BackgroundColor="{StaticResource Primary}"
+                                                    CornerRadius="15"
+                                                    Padding="8,4"
+                                                    HasShadow="False">
+                                                    <Label
+                                                        Text="Cached"
+                                                        FontSize="10"
+                                                        TextColor="White" />
+                                                </Frame>
+                                            </HorizontalStackLayout>
+                                        </Grid>
+                                    </Frame>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <Frame
+                                    Padding="20"
+                                    BackgroundColor="{StaticResource Gray100}"
+                                    CornerRadius="8">
+                                    <Label
+                                        FontSize="14"
+                                        HorizontalOptions="Center"
+                                        Text="No cached models. Download models from the Models page."
+                                        TextColor="{StaticResource Gray500}" />
+                                </Frame>
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!--  Info Section  -->
+                <Frame Padding="15" Style="{StaticResource ModernCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            Text="About"
+                            TextColor="{StaticResource Primary}" />
+
+                        <Label
+                            FontSize="14"
+                            Text="Foundry Local UI allows you to manage and interact with AI models locally using Microsoft Foundry Local."
+                            TextColor="{StaticResource Gray500}" />
+
+                        <Label
+                            FontSize="14"
+                            Text="Version 1.0 - Built with .NET 9 MAUI"
+                            TextColor="{StaticResource Gray400}"
+                            FontAttributes="Italic" />
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!--  Footer  -->
+        <Frame
+            Grid.Row="4"
+            Margin="0,15,0,0"
+            Padding="10"
+            BackgroundColor="{StaticResource Gray100}"
+            CornerRadius="10"
+            HasShadow="False">
+            <Label
+                FontSize="12"
+                HorizontalOptions="Center"
+                Text="Foundry Local UI v1.0 - © 2026 Microsoft Foundry"
+                TextColor="{StaticResource Gray500}" />
+        </Frame>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET MAUI: Windows",
+            "type": "maui",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "mauiTarget": "windows"
+        },
+        {
+            "name": ".NET MAUI: Android",
+            "type": "maui",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "mauiTarget": "android"
+        },
+        {
+            "name": ".NET MAUI: iOS",
+            "type": "maui",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "mauiTarget": "ios"
+        },
+        {
+            "name": ".NET MAUI: MacCatalyst",
+            "type": "maui",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "mauiTarget": "maccatalyst"
+        }
+    ]
+}

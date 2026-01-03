@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView 
+    x:Class="mg3.foundry.Features.FoundryCore.Views.NotificationCenter"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:mg3.foundry.Features.FoundryCore.ViewModels">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Frame
+            Grid.Row="0"
+            Padding="10"
+            BackgroundColor="{StaticResource Primary}"
+            CornerRadius="10,10,0,0"
+            HasShadow="True">
+            <HorizontalStackLayout Spacing="10">
+                <Label
+                    Text="🔔 Notifications"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    TextColor="White"
+                    VerticalOptions="Center" />
+                
+                <HorizontalStackLayout
+                    HorizontalOptions="EndAndExpand"
+                    Spacing="10">
+                    <Button
+                        Command="{Binding ClearAllCommand}"
+                        Text="Clear All"
+                        BackgroundColor="Transparent"
+                        TextColor="White"
+                        FontSize="14" />
+                    
+                    <Label
+                        Text="{Binding Notifications.Count}"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        TextColor="White"
+                        VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </HorizontalStackLayout>
+        </Frame>
+
+        <!-- Notifications List -->
+        <ScrollView Grid.Row="1">
+            <CollectionView
+                ItemsSource="{Binding Notifications}"
+                SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame
+                            Margin="10,5"
+                            Padding="12"
+                            CornerRadius="8"
+                            HasShadow="True"
+                            BorderColor="{Binding Type, Converter={StaticResource NotificationTypeToColorConverter}}"
+                            BackgroundColor="{Binding Type, Converter={StaticResource NotificationTypeToBackgroundConverter}}">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <!-- Icon -->
+                                <Label
+                                    Grid.Column="0"
+                                    Text="{Binding Type, Converter={StaticResource NotificationTypeToIconConverter}}"
+                                    FontSize="24"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="Center"
+                                    WidthRequest="40" />
+
+                                <!-- Content -->
+                                <VerticalStackLayout
+                                    Grid.Column="1"
+                                    Spacing="5">
+                                    <HorizontalStackLayout>
+                                        <Label
+                                            Text="{Binding Title}"
+                                            FontSize="16"
+                                            FontAttributes="Bold"
+                                            TextColor="{StaticResource Black}"
+                                            VerticalOptions="Center" />
+                                        
+                                        <Label
+                                            Text="{Binding Timestamp, StringFormat='{0:HH:mm}'}"
+                                            FontSize="12"
+                                            TextColor="{StaticResource Gray500}"
+                                            HorizontalOptions="EndAndExpand"
+                                            VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+
+                                    <Label
+                                        Text="{Binding Message}"
+                                        FontSize="14"
+                                        TextColor="{StaticResource Black}" />
+
+                                    <HorizontalStackLayout
+                                        IsVisible="{Binding IsDismissible}"
+                                        HorizontalOptions="End">
+                                        <Button
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:NotificationCenterViewModel}}, Path=DismissCommand}"
+                                            CommandParameter="{Binding Id}"
+                                            Text="Dismiss"
+                                            BackgroundColor="Transparent"
+                                            TextColor="{StaticResource Primary}"
+                                            FontSize="12"
+                                            Padding="5,2" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <Frame
+                        Padding="20"
+                        BackgroundColor="Transparent">
+                        <Label
+                            Text="No notifications"
+                            FontSize="16"
+                            TextColor="{StaticResource Gray500}"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center" />
+                    </Frame>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </ScrollView>
+    </Grid>
+</ContentView>

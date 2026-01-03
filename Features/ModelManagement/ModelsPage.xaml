@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="mg3.foundry.Features.ModelManagement.ModelsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:mg3.foundry.Features.ModelManagement"
+    Title="Models">
+
+    <Grid Padding="10" RowDefinitions="Auto,Auto,*">
+
+        <!--  Header  -->
+        <Frame
+            Grid.Row="0"
+            Margin="0,0,0,10"
+            Padding="15"
+            BorderColor="{StaticResource Primary}"
+            CornerRadius="10">
+            <VerticalStackLayout Spacing="10">
+                <HorizontalStackLayout>
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="24"
+                        HorizontalOptions="StartAndExpand"
+                        Text="Model Management" />
+
+                    <Button
+                        Command="{Binding RefreshCommand}"
+                        CornerRadius="4"
+                        Text="↻ Refresh" />
+                </HorizontalStackLayout>
+
+                <Label
+                    FontSize="14"
+                    Text="{Binding StatusMessage}"
+                    TextColor="Gray" />
+
+                <Border HeightRequest="8" Padding="0">
+                    <ProgressBar
+                        IsVisible="{Binding IsLoading}"
+                        Progress="{Binding DownloadProgress}"
+                        ProgressColor="{StaticResource Primary}"
+                        VerticalOptions="Fill" />
+                </Border>
+
+                <ActivityIndicator
+                    IsRunning="{Binding IsLoading}"
+                    IsVisible="{Binding IsLoading}"
+                    Color="{StaticResource Primary}" />
+            </VerticalStackLayout>
+        </Frame>
+
+        <!--  Tabs  -->
+        <HorizontalStackLayout
+            Grid.Row="1"
+            Margin="0,0,0,10"
+            Spacing="10">
+            <Button
+                x:Name="AvailableTab"
+                Clicked="OnAvailableTabClicked"
+                HorizontalOptions="FillAndExpand"
+                Text="Available Models" />
+
+            <Button
+                x:Name="CachedTab"
+                Clicked="OnCachedTabClicked"
+                HorizontalOptions="FillAndExpand"
+                Text="Cached Models" />
+        </HorizontalStackLayout>
+
+        <!--  Content  -->
+        <ScrollView
+            Grid.Row="2"
+            Padding="0,0,20,0"
+            VerticalScrollBarVisibility="Always">
+            <VerticalStackLayout x:Name="ContentArea">
+
+                <!--  Available Models View  -->
+                <VerticalStackLayout x:Name="AvailableModelsView" IsVisible="True">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding AvailableModels}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Frame
+                                    Margin="0,5"
+                                    Padding="15"
+                                    BorderColor="LightGray"
+                                    CornerRadius="10">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <HorizontalStackLayout
+                                            Grid.Column="0"
+                                            Spacing="5"
+                                            VerticalOptions="Center">
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="18"
+                                                Text="{Binding DisplayName}" />
+                                            <Label
+                                                FontSize="14"
+                                                Text="{Binding Version}"
+                                                TextColor="Gray" />
+                                            <Label
+                                                FontSize="12"
+                                                Text="{Binding ModelType}"
+                                                TextColor="Gray" />
+                                            <Label
+                                                FontSize="12"
+                                                IsVisible="{Binding IsCached}"
+                                                Text="✓ Cached"
+                                                TextColor="Green" />
+                                        </HorizontalStackLayout>
+
+                                        <Button
+                                            Grid.Column="1"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DownloadModelCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding IsCached, Converter={StaticResource InvertedBoolConverter}}"
+                                            Text="Download"
+                                            VerticalOptions="Center" />
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <!--  Empty View for Available Models  -->
+                    <Label
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        IsVisible="{Binding AvailableModels.Count, Converter={StaticResource IntToBoolConverter}, ConverterParameter='Inverted'}"
+                        Text="No models available"
+                        TextColor="Gray"
+                        VerticalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!--  Cached Models View  -->
+                <VerticalStackLayout x:Name="CachedModelsView" IsVisible="False">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding CachedModels}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Frame
+                                    Margin="0,5"
+                                    Padding="15"
+                                    BorderColor="LightGray"
+                                    CornerRadius="10">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <HorizontalStackLayout
+                                            Grid.Column="0"
+                                            Spacing="5"
+                                            VerticalOptions="Center">
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="18"
+                                                Text="{Binding DisplayName}" />
+                                            <Label FontSize="16" Text=":" />
+                                            <Label
+                                                FontSize="14"
+                                                Text="{Binding Version}"
+                                                TextColor="Gray"
+                                                VerticalOptions="End" />
+                                        </HorizontalStackLayout>
+
+                                        <Button
+                                            Grid.Column="1"
+                                            BackgroundColor="Red"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteModelCommand}"
+                                            CommandParameter="{Binding .}"
+                                            Text="Delete"
+                                            TextColor="White"
+                                            VerticalOptions="Center" />
+                                    </Grid>
+                                </Frame>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <!--  Empty View for Cached Models  -->
+                    <Label
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        IsVisible="{Binding CachedModels.Count, Converter={StaticResource IntToBoolConverter}, ConverterParameter='Inverted'}"
+                        Text="No cached models. Download models from the Available tab."
+                        TextColor="Gray"
+                        VerticalOptions="Center" />
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Application
+    x:Class="mg3.foundry.App"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:mg3.foundry.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!--  Converters  -->
+            <local:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <local:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <local:BoolToBorderColorConverter x:Key="BoolToBorderColorConverter" />
+            <local:BoolToBackgroundConverter x:Key="BoolToBackgroundConverter" />
+            <local:BoolToAlignmentConverter x:Key="BoolToAlignmentConverter" />
+            <local:BoolToErrorColorConverter x:Key="BoolToErrorColorConverter" />
+            <local:IntToBoolConverter x:Key="IntToBoolConverter" />
+            <local:IsNotNullConverter x:Key="IsNotNullConverter" />
+            <local:BoolToStatusTextConverter x:Key="BoolToStatusTextConverter" />
+            <local:AnyTrueConverter x:Key="AnyTrueConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

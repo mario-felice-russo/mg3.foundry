@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="mg3.foundry.Features.Chat.ChatPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:mg3.foundry.Features.Chat"
+    Title="Chat">
+
+    <Grid Padding="10" RowDefinitions="Auto,*,Auto">
+
+        <!--  Model Selection  -->
+        <Frame
+            Grid.Row="0"
+            Margin="0,0,0,10"
+            Padding="10"
+            BorderColor="{StaticResource Primary}"
+            CornerRadius="10">
+            <VerticalStackLayout>
+                <HorizontalStackLayout Spacing="10">
+                    <Label
+                        FontSize="16"
+                        Text="Model:"
+                        VerticalOptions="Center" />
+
+                    <Picker
+                        HorizontalOptions="FillAndExpand"
+                        IsEnabled="{Binding IsLoadingModels, Converter={StaticResource InvertedBoolConverter}}"
+                        ItemDisplayBinding="{Binding Id}"
+                        ItemsSource="{Binding AvailableModels}"
+                        SelectedItem="{Binding SelectedModel}" />
+
+                    <Button
+                        Command="{Binding ShowModelInfoCommand}"
+                        CornerRadius="20"
+                        HeightRequest="40"
+                        Text="ℹ️"
+                        WidthRequest="40" />
+
+                    <Button
+                        Command="{Binding LoadModelsCommand}"
+                        CornerRadius="20"
+                        HeightRequest="40"
+                        Text="↻"
+                        WidthRequest="40" />
+                </HorizontalStackLayout>
+                <Label
+                    FontSize="10"
+                    IsVisible="{Binding SelectedModel, Converter={StaticResource IsNotNullConverter}}"
+                    TextColor="Gray">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Context Limits: " />
+                            <Span Text="{Binding SelectedModel.MaxInputTokens}" />
+                            <Span Text=" Input / " />
+                            <Span Text="{Binding SelectedModel.MaxOutputTokens}" />
+                            <Span Text=" Output" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+            </VerticalStackLayout>
+        </Frame>
+
+        <!--  Chat Messages  -->
+        <ScrollView x:Name="MessagesScrollView" Grid.Row="1" Padding="0,0,10,0">
+            <CollectionView ItemsSource="{Binding Messages}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame
+                            Margin="10,5,5,5"
+                            Padding="10"
+                            BackgroundColor="{Binding IsUser, Converter={StaticResource BoolToBackgroundConverter}}"
+                            BorderColor="{Binding IsUser, Converter={StaticResource BoolToBorderColorConverter}}"
+                            CornerRadius="10"
+                            HorizontalOptions="{Binding IsUser, Converter={StaticResource BoolToAlignmentConverter}}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <!--  Image  -->
+                                    <RowDefinition Height="*" />
+                                    <!--  Text  -->
+                                    <RowDefinition Height="Auto" />
+                                    <!--  Meta  -->
+                                    <RowDefinition Height="Auto" />
+                                    <!--  Status  -->
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!--  Attached Image  -->
+                                <Image
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    Margin="0,0,0,10"
+                                    Aspect="AspectFit"
+                                    HeightRequest="200"
+                                    IsVisible="{Binding AttachedImageSource, Converter={StaticResource IsNotNullConverter}}"
+                                    Source="{Binding AttachedImageSource}" />
+
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    FontSize="14"
+                                    Text="{Binding Text}"
+                                    TextColor="{Binding IsError, Converter={StaticResource BoolToErrorColorConverter}}" />
+
+                                <Label
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    FontSize="10"
+                                    HorizontalOptions="Start"
+                                    Text="{Binding Timestamp, StringFormat='{0:HH:mm}'}"
+                                    TextColor="Gray" />
+
+                                <HorizontalStackLayout
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    IsVisible="{Binding IsUser, Converter={StaticResource InvertedBoolConverter}}"
+                                    Spacing="10">
+
+                                    <Button
+                                        Padding="5,2"
+                                        BackgroundColor="#E0E0E0"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ChatViewModel}}, Path=ContinueMessageCommand}"
+                                        CommandParameter="{Binding .}"
+                                        CornerRadius="5"
+                                        FontSize="10"
+                                        IsVisible="{Binding IsTruncated}"
+                                        Text="▶ Continue"
+                                        TextColor="Black" />
+
+                                    <Button
+                                        Padding="5,2"
+                                        BackgroundColor="Transparent"
+                                        Clicked="OnCopyMessageClicked"
+                                        CommandParameter="{Binding Text}"
+                                        FontSize="10"
+                                        Text="📋 Copy"
+                                        TextColor="{StaticResource Primary}" />
+                                </HorizontalStackLayout>
+
+                                <Label
+                                    Grid.Row="3"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="2"
+                                    Margin="0,5,0,0"
+                                    FontAttributes="Italic"
+                                    FontSize="10"
+                                    HorizontalOptions="End"
+                                    IsVisible="{Binding IsUser, Converter={StaticResource InvertedBoolConverter}}"
+                                    TextColor="Gray">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding ExecutionTime, StringFormat='⏱ {0:mm\\:ss\\.fff}   '}" />
+                                            <Span Text="{Binding TokenUsageDetails, StringFormat='🔠 {0}'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <Label
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        Text="No messages yet. Start chatting with your model!"
+                        TextColor="Gray"
+                        VerticalOptions="Center" />
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </ScrollView>
+
+        <!--  Input Area  -->
+        <Frame
+            Grid.Row="2"
+            Margin="0,10,0,0"
+            Padding="10"
+            BorderColor="{StaticResource Primary}"
+            CornerRadius="10">
+            <VerticalStackLayout>
+                <!--  Attachment Preview (Image or File Name)  -->
+                <Grid Margin="0,0,0,10" IsVisible="{Binding ., Converter={StaticResource AnyTrueConverter}}">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <HorizontalStackLayout Grid.Column="0" Spacing="10">
+                        <!--  Image Preview  -->
+                        <Frame
+                            Padding="0"
+                            BorderColor="Gray"
+                            CornerRadius="5"
+                            HorizontalOptions="Start"
+                            IsVisible="{Binding AttachedImagePreview, Converter={StaticResource IsNotNullConverter}}">
+                            <Image
+                                Aspect="AspectFill"
+                                HeightRequest="100"
+                                Source="{Binding AttachedImagePreview}"
+                                WidthRequest="100" />
+                        </Frame>
+
+                        <!--  File Name Preview  -->
+                        <Frame
+                            Padding="10"
+                            BorderColor="{StaticResource Primary}"
+                            CornerRadius="5"
+                            HorizontalOptions="Start"
+                            IsVisible="{Binding AttachedFileContent, Converter={StaticResource IsNotNullConverter}}">
+                            <HorizontalStackLayout Spacing="5">
+                                <Label Text="📄" VerticalOptions="Center" />
+                                <Label
+                                    FontAttributes="Bold"
+                                    Text="{Binding AttachedFileName}"
+                                    VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </Frame>
+                    </HorizontalStackLayout>
+
+                    <Button
+                        Grid.Column="1"
+                        BackgroundColor="Transparent"
+                        Command="{Binding RemoveAttachmentCommand}"
+                        Text="✕"
+                        TextColor="Red"
+                        VerticalOptions="Start" />
+                </Grid>
+
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                    <Button
+                        Grid.Column="0"
+                        Margin="0,0,5,0"
+                        Command="{Binding PickAttachmentCommand}"
+                        CornerRadius="20"
+                        HeightRequest="40"
+                        Text="📎"
+                        WidthRequest="40" />
+
+                    <Entry
+                        Grid.Column="1"
+                        IsEnabled="{Binding IsSending, Converter={StaticResource InvertedBoolConverter}}"
+                        Placeholder="Type your message..."
+                        Text="{Binding UserInput}"
+                        VerticalOptions="Center" />
+
+                    <Button
+                        Grid.Column="2"
+                        Margin="5,0"
+                        Command="{Binding ClearChatCommand}"
+                        CornerRadius="20"
+                        HeightRequest="40"
+                        Text="🗑️"
+                        WidthRequest="40" />
+
+                    <VerticalStackLayout Grid.Column="3">
+                        <Label
+                            FontSize="10"
+                            HorizontalOptions="Center"
+                            Text="{Binding EstimatedTotalTokens, StringFormat='Tokens: {0}'}"
+                            TextColor="{Binding TokenCountColor}"
+                            ToolTipProperties.Text="{Binding SelectedModel.MaxInputTokens, StringFormat='Max tokens: {0}'}" />
+
+                        <Button
+                            Command="{Binding SendMessageCommand}"
+                            IsEnabled="{Binding IsSending, Converter={StaticResource InvertedBoolConverter}}"
+                            Text="Send"
+                            WidthRequest="80" />
+                    </VerticalStackLayout>
+
+                    <ActivityIndicator
+                        Grid.Column="3"
+                        HorizontalOptions="Center"
+                        IsRunning="{Binding IsSending}"
+                        IsVisible="{Binding IsSending}"
+                        VerticalOptions="Center"
+                        Color="{StaticResource Primary}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Frame>
+    </Grid>
+</ContentPage>

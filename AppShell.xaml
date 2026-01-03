@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="mg3.foundry.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:mg3.foundry"
+    xmlns:home="clr-namespace:mg3.foundry.Features.Home"
+    xmlns:chat="clr-namespace:mg3.foundry.Features.Chat"
+    xmlns:models="clr-namespace:mg3.foundry.Features.ModelManagement"
+    Title="mg3.foundry">
+
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate home:MainPage}"
+        Route="MainPage"
+        Icon="home.png" />
+
+    <ShellContent
+        Title="Chat"
+        ContentTemplate="{DataTemplate chat:ChatPage}"
+        Route="ChatPage"
+        Icon="chat.png" />
+
+    <ShellContent
+        Title="Models"
+        ContentTemplate="{DataTemplate models:ModelsPage}"
+        Route="ModelsPage"
+        Icon="models.png" />
+
+</Shell>
