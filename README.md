@@ -140,7 +140,7 @@ I contributi sono benvenuti! Si prega di:
 
 ## 📜 Licenza
 
-Apache License 2.0. Vedere il file [`LICENSE`](license.txt) per i dettagli.
+Apache License 2.0. Vedere il file [`LICENSE`](LICENSE.txt) per i dettagli.
 
 ---
 
